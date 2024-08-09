@@ -3,7 +3,8 @@ page {
     tea = EXT:tea/Resources/Public/Css/Main.css
   }
 
-  includeJSFooter {
+  includeJS {
     tea = EXT:tea/Resources/Public/JavaScript/Main.js
+    tea.type = module
   }
 }

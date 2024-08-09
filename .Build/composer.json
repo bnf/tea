@@ -1,0 +1,169 @@
+{
+	"name": "ttn/tea-root",
+	"description": "Composer test project for ttn/tea",
+	"repositories": [
+		{
+			"type": "path",
+			"url": "..",
+			"options": {
+				"symlink": true
+			}
+		}
+	],
+	"license": "GPL-2.0-or-later",
+	"type": "project",
+	"keywords": [
+		"typo3",
+		"example",
+		"extension",
+		"tdd",
+		"phpunit",
+		"unit testing",
+		"best practices"
+	],
+	"require": {
+		"ttn/tea": "@dev"
+	},
+	"require-dev": {
+		"ergebnis/composer-normalize": "^2.43.0",
+		"friendsofphp/php-cs-fixer": "^3.62.0",
+		"helmich/typo3-typoscript-lint": "^3.1.1",
+		"icanhazstring/composer-unused": "^0.8.11",
+		"php-coveralls/php-coveralls": "^2.7.0",
+		"php-parallel-lint/php-parallel-lint": "^1.4",
+		"phpmd/phpmd": "^2.15.0",
+		"phpstan/extension-installer": "^1.4.1",
+		"phpstan/phpstan": "^1.11.10",
+		"phpstan/phpstan-phpunit": "^1.4.0",
+		"phpstan/phpstan-strict-rules": "^1.6.0",
+		"phpunit/phpunit": "^9.6.20",
+		"saschaegerer/phpstan-typo3": "^1.10.1",
+		"seld/jsonlint": "^1.11.0",
+		"spaze/phpstan-disallowed-calls": "^3.4",
+		"squizlabs/php_codesniffer": "^3.10.2",
+		"ssch/typo3-rector": "^2.6.4",
+		"ssch/typo3-rector-testing-framework": "^2.0.1",
+		"symfony/console": "^5.4 || ^6.4 || ^7.0",
+		"symfony/translation": "^5.4 || ^6.4 || ^7.0",
+		"symfony/yaml": "^5.4 || ^6.4 || ^7.0",
+		"tomasvotruba/cognitive-complexity": "^0.2.3",
+		"tomasvotruba/type-coverage": "^0.3.1",
+		"typo3/cms-fluid-styled-content": "^11.5.4 || ^12.4.2",
+		"typo3/coding-standards": "^0.6.1 || ^0.8.0",
+		"typo3/testing-framework": "^7.0.5",
+		"webmozart/assert": "^1.11.0"
+	},
+	"prefer-stable": true,
+	"autoload-dev": {
+		"psr-4": {
+			"TTN\\Tea\\Tests\\": "../Tests/"
+		}
+	},
+	"config": {
+		"allow-plugins": {
+			"ergebnis/composer-normalize": true,
+			"phpstan/extension-installer": true,
+			"typo3/class-alias-loader": true,
+			"typo3/cms-composer-installers": true
+		},
+		"bin-dir": "bin",
+		"lock": false,
+		"preferred-install": {
+			"*": "dist"
+		},
+		"sort-packages": true
+	},
+	"scripts": {
+		"ci:composer:normalize": "@composer normalize --no-check-lock --dry-run",
+		"ci:composer:psr-verify": "@composer dumpautoload --optimize --strict-psr --no-plugins",
+		"ci:composer:unused": "composer-unused",
+		"ci:coverage": [
+			"@ci:coverage:unit",
+			"@ci:coverage:functional"
+		],
+		"ci:coverage:functional": [
+			"@ci:tests:create-directories",
+			"@coverage:create-directories",
+			"phpunit -c ../Build/phpunit/FunctionalTests.xml --whitelist Classes --coverage-php=coverage/functional.cov Tests/Functional"
+		],
+		"ci:coverage:merge": [
+			"@coverage:create-directories",
+			"@php tools/phpcov merge --clover=./logs/clover.xml ./coverage/"
+		],
+		"ci:coverage:unit": [
+			"@coverage:create-directories",
+			"phpunit -c ../Build/phpunit/UnitTests.xml --whitelist Classes --coverage-php=coverage/unit.cov Tests/Unit"
+		],
+		"ci:json:lint": "find .. ! -path '../*/.cache/*' ! -path '../.Build/*' ! -path '*/node_modules/*' -name '*.json' | xargs -r php bin/jsonlint -q",
+		"ci:php": [
+			"@ci:php:cs-fixer",
+			"@ci:php:lint",
+			"@ci:php:sniff",
+			"@ci:php:stan"
+		],
+		"ci:php:cs-fixer": "php-cs-fixer fix --config ../php-cs-fixer.php -v --dry-run --diff",
+		"ci:php:lint": "parallel-lint ../.*.php ../*.php ../Classes ../Configuration ../Tests",
+		"ci:php:mess": "phpmd ../Classes text ../Build/phpmd/phpmd.xml",
+		"ci:php:sniff": "phpcs ../Classes ../Configuration ../Tests",
+		"ci:php:stan": "cd .. && phpstan --no-progress -v",
+		"ci:static": [
+			"@ci:composer:normalize",
+			"@ci:json:lint",
+			"@ci:php:cs-fixer",
+			"@ci:php:lint",
+			"@ci:php:sniff",
+			"@ci:php:stan",
+			"@ci:typoscript:lint",
+			"@ci:xliff:lint",
+			"@ci:yaml:lint"
+		],
+		"ci:tests:create-directories": "mkdir -p public/typo3temp/var/tests",
+		"ci:tests:functional": [
+			"@ci:tests:create-directories",
+			"find '../Tests/Functional' -wholename '*Test.php' | parallel --gnu 'echo; echo \\\"Running functional test suite {}\\\"; bin/phpunit -c ../Build/phpunit/FunctionalTests.xml {}';"
+		],
+		"ci:tests:unit": "phpunit -c Build/phpunit/UnitTests.xml Tests/Unit",
+		"ci:typoscript:lint": "typoscript-lint -c ../Configuration/TsLint.yml --ansi -n --fail-on-warnings -vvv ../Configuration/TypoScript",
+		"ci:xliff:lint": "php ../Build/xliff/xliff-lint lint:xliff ../Resources/Private/Language",
+		"ci:yaml:lint": "cd .. && find . ! -path '*.Build/*' ! -path '*node_modules/*' \\( -name '*.yaml' -o -name '*.yml' \\) | xargs -r php ./.Build/bin/yaml-lint",
+		"coverage:create-directories": "mkdir -p logs coverage",
+		"docs:generate": "docker run --rm --pull always -v $(pwd):/project -it ghcr.io/typo3-documentation/render-guides:latest --config=Documentation",
+		"fix:composer:normalize": "@composer normalize --no-check-lock",
+		"fix:php": [
+			"@fix:php:cs",
+			"@fix:php:sniff"
+		],
+		"fix:php:cs": "cd .. && php-cs-fixer fix --config .php-cs-fixer.php",
+		"fix:php:sniff": "cd .. && phpcbf Classes Configuration Tests",
+		"phpstan:baseline": "cd .. && phpstan --generate-baseline --allow-empty-baseline"
+	},
+	"scripts-descriptions": {
+		"ci:composer:normalize": "Checks the composer.json.",
+		"ci:composer:psr-verify": "Verifies PSR-4 namespace correctness.",
+		"ci:composer:unused": "Finds unused Composer packages required in composer.json.",
+		"ci:coverage:functional": "Generates the code coverage report for functional tests.",
+		"ci:coverage:merge": "Merges the code coverage reports for unit and functional tests.",
+		"ci:coverage:unit": "Generates the code coverage report for unit tests.",
+		"ci:json:lint": "Lints the JSON files.",
+		"ci:php": "Runs all static checks for the PHP files.",
+		"ci:php:cs-fixer": "Checks the code style with the PHP Coding Standards Fixer (PHP-CS-Fixer).",
+		"ci:php:lint": "Lints the PHP files for syntax errors.",
+		"ci:php:mess": "Runs PHP mess detection.",
+		"ci:php:sniff": "Checks the code style with PHP_CodeSniffer (PHPCS).",
+		"ci:php:stan": "Checks the PHP types using PHPStan.",
+		"ci:static": "Runs all static code checks (syntax, style, types).",
+		"ci:tests:create-directories": "Creates the directories required to smoothely run the functional tests.",
+		"ci:tests:functional": "Runs the functional tests.",
+		"ci:tests:unit": "Runs the unit tests.",
+		"ci:typoscript:lint": "Lints the TypoScript files.",
+		"ci:xliff:lint": "Lints the XLIFF files.",
+		"ci:yaml:lint": "Lints the YAML files.",
+		"coverage:create-directories": "Creates the directories needed for recording and merging the code coverage reports.",
+		"docs:generate": "Renders the extension ReST documentation.",
+		"fix:composer:normalize": "Normalizes composer.json file content.",
+		"fix:php": "Runs all fixers for the PHP code.",
+		"fix:php:cs": "Fixes the code style with PHP-CS-Fixer.",
+		"fix:php:sniff": "Fixes the code style with PHP_CodeSniffer.",
+		"phpstan:baseline": "Updates the PHPStan baseline file to match the code."
+	}
+}

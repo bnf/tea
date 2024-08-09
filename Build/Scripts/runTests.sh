@@ -483,9 +483,9 @@ fi
 case ${TEST_SUITE} in
     cgl)
         if [ "${CGLCHECK_DRY_RUN}" -eq 1 ]; then
-            COMMAND="composer ci:php:cs-fixer"
+            COMMAND="composer -d .Build ci:php:cs-fixer"
         else
-            COMMAND="composer fix:php:cs"
+            COMMAND="composer -d .Build fix:php:cs"
         fi
         ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name composer-command-${SUFFIX} -e COMPOSER_CACHE_DIR=.cache/composer -e COMPOSER_ROOT_VERSION=${COMPOSER_ROOT_VERSION} ${IMAGE_PHP} /bin/sh -c "${COMMAND}"
         SUITE_EXIT_CODE=$?
@@ -505,26 +505,26 @@ case ${TEST_SUITE} in
         cleanTestFiles
         ;;
     composer)
-        COMMAND_PARTS=(composer "$@")
+        COMMAND_PARTS=(composer -d .Build "$@")
         ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name composer-command-${SUFFIX} -e COMPOSER_CACHE_DIR=.cache/composer -e COMPOSER_ROOT_VERSION=${COMPOSER_ROOT_VERSION} ${IMAGE_PHP} "${COMMAND_PARTS[@]}"
         SUITE_EXIT_CODE=$?
         ;;
     composerUpdateMax)
-        COMMAND="composer config --unset platform.php; composer require --no-ansi --no-interaction --no-progress --no-install typo3/cms-core:"^${CORE_VERSION}"; composer update --no-progress --no-interaction; composer dumpautoload; composer show"
+        COMMAND="composer -d .Build config --unset platform.php; composer -d .Build require --no-ansi --no-interaction --no-progress --no-install typo3/cms-core:"^${CORE_VERSION}"; composer -d .Build update --no-progress --no-interaction; composer -d .Build dumpautoload; composer -d .Build show"
         ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name composer-install-max-${SUFFIX} -e COMPOSER_CACHE_DIR=.cache/composer -e COMPOSER_ROOT_VERSION=${COMPOSER_ROOT_VERSION} ${IMAGE_PHP} /bin/sh -c "${COMMAND}"
         SUITE_EXIT_CODE=$?
         ;;
     composerUpdateMin)
-        COMMAND="composer config platform.php ${PHP_VERSION}.0; composer require --no-ansi --no-interaction --no-progress --no-install typo3/cms-core:"^${CORE_VERSION}"; composer update --prefer-lowest --no-progress --no-interaction; composer dumpautoload; composer show"
+        COMMAND="composer -d .Build config platform.php ${PHP_VERSION}.0; composer -d .Build require --no-ansi --no-interaction --no-progress --no-install typo3/cms-core:"^${CORE_VERSION}"; composer -d .Build update --prefer-lowest --no-progress --no-interaction; composer -d .Build dumpautoload; composer -d .Build show"
         ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name composer-install-min-${SUFFIX} -e COMPOSER_CACHE_DIR=.cache/composer -e COMPOSER_ROOT_VERSION=${COMPOSER_ROOT_VERSION} ${IMAGE_PHP} /bin/sh -c "${COMMAND}"
         SUITE_EXIT_CODE=$?
         ;;
     composerNormalize)
-        COMMAND="composer ci:composer:normalize"
+        COMMAND="composer -d .Build ci:composer:normalize"
         if [ "${CGLCHECK_DRY_RUN}" -eq 1 ]; then
-            COMMAND="composer ci:composer:normalize"
+            COMMAND="composer -d .Build ci:composer:normalize"
         else
-            COMMAND="composer fix:composer:normalize"
+            COMMAND="composer -d .Build fix:composer:normalize"
         fi
         ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name composer-normalize-${SUFFIX} -e COMPOSER_CACHE_DIR=.cache/composer -e COMPOSER_ROOT_VERSION=${COMPOSER_ROOT_VERSION} ${IMAGE_DOCS} /bin/sh -c "${COMMAND}"
         SUITE_EXIT_CODE=$?
@@ -579,12 +579,12 @@ case ${TEST_SUITE} in
         esac
         ;;
     lintTypoScript)
-        COMMAND="composer ci:typoscript:lint"
+        COMMAND="composer -d .Build ci:typoscript:lint"
         ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name composer-command-${SUFFIX} -e COMPOSER_CACHE_DIR=.cache/composer -e COMPOSER_ROOT_VERSION=${COMPOSER_ROOT_VERSION} ${IMAGE_PHP} /bin/sh -c "${COMMAND}"
         SUITE_EXIT_CODE=$?
         ;;
     lintPhp)
-        COMMAND="composer ci:php:lint"
+        COMMAND="composer -d .Build ci:php:lint"
         ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name composer-command-${SUFFIX} -e COMPOSER_CACHE_DIR=.cache/composer -e COMPOSER_ROOT_VERSION=${COMPOSER_ROOT_VERSION} ${IMAGE_PHP} /bin/sh -c "${COMMAND}"
         SUITE_EXIT_CODE=$?
         ;;
@@ -607,12 +607,12 @@ case ${TEST_SUITE} in
         SUITE_EXIT_CODE=$?
         ;;
     lintJson)
-        COMMAND="composer ci:json:lint"
+        COMMAND="composer -d .Build ci:json:lint"
         ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name composer-command-${SUFFIX} -e COMPOSER_CACHE_DIR=.cache/composer -e COMPOSER_ROOT_VERSION=${COMPOSER_ROOT_VERSION} ${IMAGE_PHP} /bin/sh -c "${COMMAND}"
         SUITE_EXIT_CODE=$?
         ;;
     lintYaml)
-        COMMAND="composer ci:yaml:lint"
+        COMMAND="composer -d .Build ci:yaml:lint"
         ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name composer-command-${SUFFIX} -e COMPOSER_CACHE_DIR=.cache/composer -e COMPOSER_ROOT_VERSION=${COMPOSER_ROOT_VERSION} ${IMAGE_PHP} /bin/sh -c "${COMMAND}"
         SUITE_EXIT_CODE=$?
         ;;
@@ -622,12 +622,12 @@ case ${TEST_SUITE} in
         SUITE_EXIT_CODE=$?
         ;;
     phpstan)
-        COMMAND="composer ci:php:stan"
+        COMMAND="composer -d .Build ci:php:stan"
         ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name composer-command-${SUFFIX} -e COMPOSER_CACHE_DIR=.cache/composer -e COMPOSER_ROOT_VERSION=${COMPOSER_ROOT_VERSION} ${IMAGE_PHP} /bin/sh -c "${COMMAND}"
         SUITE_EXIT_CODE=$?
         ;;
     phpstanGenerateBaseline)
-        COMMAND="composer phpstan:baseline"
+        COMMAND="composer -d .Build phpstan:baseline"
         ${CONTAINER_BIN} run ${CONTAINER_COMMON_PARAMS} --name composer-command-${SUFFIX} -e COMPOSER_CACHE_DIR=.cache/composer -e COMPOSER_ROOT_VERSION=${COMPOSER_ROOT_VERSION} ${IMAGE_PHP} /bin/sh -c "${COMMAND}"
         SUITE_EXIT_CODE=$?
         ;;
