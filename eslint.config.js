@@ -1,5 +1,6 @@
 import js from "@eslint/js";
 import eslintConfigPrettier from "eslint-config-prettier";
+import globals from "globals";
 
 export default [
   js.configs.recommended,
@@ -8,7 +9,7 @@ export default [
     languageOptions: {
       ecmaVersion: 2024,
       globals: {
-        document: false,
+        ...globals,
         TYPO3: "readonly"
       },
     },
