@@ -178,35 +178,7 @@
 		],
 		"fix:php:cs": "php-cs-fixer fix --config .php-cs-fixer.php",
 		"fix:php:sniff": "phpcbf Classes Configuration Tests",
-		"phpstan:baseline": "phpstan --generate-baseline --allow-empty-baseline",
-		"prepare-release": [
-			"rm -rf .Build",
-			"rm -rf .ddev",
-			"rm -rf .github",
-			"rm -rf .gitlab",
-			"rm -rf Build",
-			"rm -rf Tests",
-			"rm -rf tools",
-			"rm .editorconfig",
-			"rm .eslintignore",
-			"rm .eslintrc.json",
-			"rm .gitattributes",
-			"rm .gitignore",
-			"rm .npmrc",
-			"rm .nvmrc",
-			"rm .php-cs-fixer.php",
-			"rm .prettierrc.js",
-			"rm Build/phpunit/FunctionalTests.xml",
-			"rm Build/phpunit/UnitTests.xml",
-			"rm package-lock.json",
-			"rm package.json",
-			"rm phive.xml",
-			"rm phpcs.xml",
-			"rm phpstan-baseline.neon",
-			"rm phpstan.neon",
-			"rm rector.php",
-			"rm stylelint.config.js"
-		]
+		"phpstan:baseline": "phpstan --generate-baseline --allow-empty-baseline"
 	},
 	"scripts-descriptions": {
 		"ci:composer:normalize": "Checks the composer.json.",
@@ -235,7 +207,6 @@
 		"fix:php": "Runs all fixers for the PHP code.",
 		"fix:php:cs": "Fixes the code style with PHP-CS-Fixer.",
 		"fix:php:sniff": "Fixes the code style with PHP_CodeSniffer.",
-		"phpstan:baseline": "Updates the PHPStan baseline file to match the code.",
-		"prepare-release": "Removes development-only files in preparation of a TER release."
+		"phpstan:baseline": "Updates the PHPStan baseline file to match the code."
 	}
 }
